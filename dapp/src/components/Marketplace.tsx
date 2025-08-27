@@ -61,13 +61,13 @@ export function Marketplace({ refreshKey = 0, onListingChange }: MarketplaceProp
           .map((obj) => {
             const content = obj.data?.content;
             if (content && 'fields' in content) {
-              const fields = content.fields as any;
+              const fields = content.fields as Record<string, unknown>;
               return {
                 id: obj.data!.objectId,
-                name: fields.name || 'Unknown',
-                description: fields.description || 'No description',
-                image_url: fields.image_url || '',
-                creator: fields.creator || '',
+                name: String(fields.name || 'Unknown'),
+                description: String(fields.description || 'No description'),
+                image_url: String(fields.image_url || ''),
+                creator: String(fields.creator || ''),
               };
             }
             return null;
@@ -103,19 +103,23 @@ export function Marketplace({ refreshKey = 0, onListingChange }: MarketplaceProp
             });
 
             if (listing.data?.content && 'fields' in listing.data.content) {
-              const listingFields = listing.data.content.fields as any;
+              const listingFields = listing.data.content.fields as Record<string, unknown>;
               
               // Check if this listing belongs to the current user
               if (listingFields.seller === currentAccount.address) {
                 // Use the field name value as the listing ID (which is the actual listing ID)
-                const listingId = typeof field.name.value === 'string' ? field.name.value : field.name.value.toString();
+                const listingId = typeof field.name.value === 'string' ? field.name.value : String(field.name.value);
+                const nftFields = listingFields.nft as Record<string, unknown> | undefined;
+                
+                const nftFieldsData = nftFields?.fields as Record<string, unknown> | undefined;
+                const nftId = nftFieldsData?.id as Record<string, unknown> | undefined;
                 
                 userListings.push({
                   id: listingId,
-                  nft_id: listingFields.nft?.fields?.id?.id || 'Unknown',
-                  nft_name: listingFields.nft?.fields?.name || 'Unknown NFT',
-                  price: listingFields.price || '0',
-                  seller: listingFields.seller,
+                  nft_id: String(nftId?.id || 'Unknown'),
+                  nft_name: String(nftFieldsData?.name || 'Unknown NFT'),
+                  price: String(listingFields.price || '0'),
+                  seller: String(listingFields.seller),
                 });
               }
             }
@@ -208,40 +212,6 @@ export function Marketplace({ refreshKey = 0, onListingChange }: MarketplaceProp
     }
   };
 
-  const purchaseNFT = async (listingId: string, price: string) => {
-    if (!currentAccount) return;
-
-    try {
-      const tx = new Transaction();
-      
-      // Split coin for exact payment
-      const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(price)]);
-      
-      tx.moveCall({
-        target: `${PACKAGE_ID}::nft_marketplace::purchase_nft`,
-        arguments: [
-          tx.object(MARKETPLACE_ID),
-          tx.pure.id(listingId),
-          coin,
-        ],
-      });
-
-      await executeSponsoredTransaction(tx, {
-        onSuccess: (result) => {
-          console.log('NFT purchased successfully:', result);
-          alert('NFT purchased successfully! (Gas-free transaction)');
-          onListingChange?.(); // Refresh the data
-        },
-        onError: (error) => {
-          console.error('Error purchasing NFT:', error);
-          alert('Error purchasing NFT. Please try again.');
-        },
-      });
-    } catch (error) {
-      console.error('Error creating purchase transaction:', error);
-      alert('Error creating transaction. Please try again.');
-    }
-  };
 
   if (!currentAccount) {
     return (
@@ -258,7 +228,7 @@ export function Marketplace({ refreshKey = 0, onListingChange }: MarketplaceProp
         <h3 className="text-lg font-semibold mb-4 text-gray-900">List Your NFT</h3>
         
         {userNFTs.length === 0 ? (
-          <p className="text-gray-500">You don't have any NFTs to list</p>
+          <p className="text-gray-500">You don&apos;t have any NFTs to list</p>
         ) : (
           <div className="space-y-4">
             <div>

@@ -6,8 +6,8 @@ import { Transaction } from '@mysten/sui/transactions';
 import { fromBase64, toBase64 } from '@mysten/sui/utils';
 
 interface SponsoredTransactionOptions {
-  onSuccess?: (result: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (result: unknown) => void;
+  onError?: (error: unknown) => void;
 }
 
 export function useSponsoredTransaction() {
