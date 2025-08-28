@@ -1,0 +1,19 @@
+{
+  "name": "tip-jar-nodejs-example",
+  "version": "1.0.0",
+  "description": "NodeJS example for interacting with Tip Jar contract using private key",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "send-tip": "node send-tip.js",
+    "get-stats": "node get-stats.js"
+  },
+  "dependencies": {
+    "@mysten/sui": "^1.14.0",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": ["sui", "blockchain", "tip-jar", "nodejs"],
+  "author": "Sui Development Workshop",
+  "license": "MIT"
+}
