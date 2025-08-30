@@ -29,7 +29,7 @@ fun init(ctx: &mut TxContext) {
     sui::transfer::share_object(guestbook);
 }
 
-public fun post_message(guestbook: &mut GuestBook, message: Message, ctx: TxContext) {
+public fun post_message(guestbook: &mut GuestBook, message: Message, ctx: &mut TxContext) {
     let length = string::length(&message.content);
     assert!(length > 0 && length <= MAX_LENGTH, EInvalidLength);
 
@@ -37,7 +37,7 @@ public fun post_message(guestbook: &mut GuestBook, message: Message, ctx: TxCont
     guestbook.number_of_messages = guestbook.number_of_messages + 1;
 }
 
-public fun create_message(message: vector<u8>, ctx: TxContext): Message {
+public fun create_message(message: vector<u8>, ctx: &mut TxContext): Message {
     let message_string = string::utf8(message);
     let length = string::length(&message_string);
     assert!(length > 0 && length <= MAX_LENGTH, EInvalidLength);
