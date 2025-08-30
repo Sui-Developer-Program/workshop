@@ -29,7 +29,6 @@ public struct WorkshopNFT has key, store {
     description: String,
     image_url: String,
     creator: address,
-    // Dynamic fields can be added at runtime for additional metadata
 }
 
 /// Listing struct for NFTs offered for sale
@@ -132,6 +131,7 @@ public fun mint_nft(
         creator: nft.creator,
     });
 
+    // sui::transfer::public_transfer(nft, ctx.sender());
     nft
 }
 
@@ -148,7 +148,7 @@ public entry fun mint_to_sender(
 
 /// List an NFT for sale - demonstrates marketplace listing logic
 /// Creates a Listing object and stores it in the shared marketplace
-public entry fun list_for_sale(
+public fun list_for_sale(
     marketplace: &mut Marketplace,
     nft: WorkshopNFT,
     price: u64,

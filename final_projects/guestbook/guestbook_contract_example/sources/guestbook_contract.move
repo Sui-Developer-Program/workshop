@@ -3,7 +3,6 @@
 module guestbook_contract::guestbook_contract;
 
 use std::string::String;
-use sui::event;
 
 /// Error codes
 const EMessageTooLong: u64 = 1;
@@ -25,18 +24,6 @@ public struct Guestbook has key {
     total_messages: u64,
 }
 
-/// Event emitted when a message is posted
-public struct MessagePosted has copy, drop {
-    sender: address,
-    message: String,
-    total_messages: u64,
-}
-
-/// Event emitted when guestbook is created
-public struct GuestbookCreated has copy, drop {
-    guestbook_id: ID,
-}
-
 /// Initialize the guestbook - creates a shared Guestbook object
 #[allow(unused_function)]
 fun init(ctx: &mut TxContext) {
@@ -45,13 +32,6 @@ fun init(ctx: &mut TxContext) {
         messages: vector::empty<Message>(),
         total_messages: 0,
     };
-
-    let guestbook_id = object::id(&guestbook);
-
-    // Emit creation event
-    event::emit(GuestbookCreated {
-        guestbook_id,
-    });
 
     // Share the guestbook so anyone can post messages
     transfer::share_object(guestbook);
@@ -80,13 +60,6 @@ public fun post_message(guestbook: &mut Guestbook, message: Message) {
 
     // Update total message count
     guestbook.total_messages = guestbook.total_messages + 1;
-
-    // Emit event for frontend tracking
-    event::emit(MessagePosted {
-        sender: message.sender,
-        message: message.message,
-        total_messages: guestbook.total_messages,
-    });
 }
 
 /// Get all messages from the guestbook
